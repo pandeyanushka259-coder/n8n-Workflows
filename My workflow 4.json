@@ -1,0 +1,239 @@
+{
+  "name": "My workflow 4",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Student Pocket Expense Wallet",
+        "formDescription": "Enter your expense in natural language",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Expense Message",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f8c960da-1ee1-4c2c-8ff9-ca35e23abff0",
+      "name": "On form submission",
+      "webhookId": "0517f806-2fe3-4c23-befa-7cdcc19ccde5"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a highly intelligent Expense Parsing Assistant. Your sole objective is to analyze raw unstructured user text messages and \nstrictly extract three core data fields: Amount, Description, and Category.\n### 🏷 EXPENSE CATEGORIZATION LOGIC:\n1. 'Food & Canteen' -> If the message contains items like burger, tea, samosa, party, maggi, dinner, lunch, or snacks.\n2. 'Travel & Commute' -> If the message contains keywords like auto, bus, petrol, fuel, rapido, uber, cab, or train.\n3. 'Education & Stationary' -> If the message references terms like xerox, printout, assignment, pen, books, library, or photocopies.\n4. 'Others' -> Any expense that does not logically fit into the three strict rules above.\n### 📝 STRICT FORMATTING RULES:\nYou must output the final result in raw clean text matching the exact pattern below. Do NOT wrap the response in markdown blocks \n(such as ```json or ```text):\nAmount: [Extract only the pure numerical value here]\nDescription: [Write a brief, clear translated action description here]\nCategory: [Insert exactly one of the 4 strict categories listed above {{ $json['Expense Message'] }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "74423732-17bb-484f-a7d5-becef33b50d1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "7bc733c8-ada1-4195-80b2-0d36018d0778",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GDbkBQfRRl4s6EVj",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "de9ea23d-19e7-4cb9-a9e9-7516b09a4173",
+              "name": "Amount",
+              "value": "={{ $json.output.match(/Amount:\\s*(\\d+)/)[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "e0fbb229-ad21-430f-b33c-a12c737d46a5",
+              "name": "Description",
+              "value": "={{ $json.output.match(/Description:\\s*(.+)/)[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "2d04102a-5b7b-44c2-9436-a6e29ef9477a",
+              "name": "Category",
+              "value": "={{ $json.output.match(/Category:\\s*(.+)/)[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "e6e260e4-f398-4bd6-8490-ac9e432a216a",
+              "name": "Date",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        0
+      ],
+      "id": "270ef143-4117-4617-b967-401bc1fc7b2c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "17h1BirHyMqEYOE518DLTrQGViY0CRxBzHi2dDb3A_uQ",
+          "mode": "list",
+          "cachedResultName": "Expense Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17h1BirHyMqEYOE518DLTrQGViY0CRxBzHi2dDb3A_uQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17h1BirHyMqEYOE518DLTrQGViY0CRxBzHi2dDb3A_uQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date ": "={{ $json.Date }}",
+            "Amount": "={{ $json.Amount }}",
+            "Description": "={{ $json.Description }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date ",
+              "displayName": "Date ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        768,
+        16
+      ],
+      "id": "2b4e1e5a-684f-4250-aee8-985c532ee121",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "u5eltDn7ZAA1KjPz",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "52ab7041-d12b-48e2-81cd-33885d01c784",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "809a5175cbe1c148973e7947d129e44255f9e79ff678931ccd4629a63b149e5f"
+  },
+  "nodeGroups": [],
+  "id": "GLyDgrWXsGfaLeqE",
+  "tags": []
+}
