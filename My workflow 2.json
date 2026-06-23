@@ -1,0 +1,184 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Classroom Sessional Leave",
+        "formDescription": "Emergency Leave Request Form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Student Name"
+            },
+            {
+              "fieldLabel": "Roll Number"
+            },
+            {
+              "fieldLabel": "Reason for Absence",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Submit Leave Request"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "aeeafde9-713a-4088-bc6f-049579824166",
+      "name": "On form submission",
+      "webhookId": "e2bc53e0-46e8-40d8-b2d6-6ec96962872b"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e413a75a-0d6c-42fb-a378-1aa3cc282ad1",
+              "name": "message",
+              "value": "=CHITTI ALERT:  Student {{$json[\"Student Name\"]}} (Roll No. {{$json[\"Roll Number\"]}})  has requested an emergency absence.  Reason: {{$json[\"Reason for Absence\"]}}  Status: Awaiting Approval.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "3b8b5e53-5e67-40fd-9447-3866df2c0863",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ede33a6c-6292-4d16-9599-741a11ea77f7",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "9c04c253-95b1-4ce9-8c02-6121933ccc4f",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.twilio.com/2010-04-01/Accounts/ACca29fb427b1e5e1e7d968b7c666da556/Messages.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "To",
+              "value": "whatsapp:+918601783449"
+            },
+            {
+              "name": "From",
+              "value": "whatsapp:+14155238886"
+            },
+            {
+              "name": "Body",
+              "value": "={{ $json.message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        672,
+        0
+      ],
+      "id": "b895faf7-be24-4fb8-a6bb-2fe23c2daa22",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "KLRbwqZpGFvWRCdY",
+          "name": "Unnamed credential"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "049f605d-3830-49bd-9467-d2e545289c35",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "809a5175cbe1c148973e7947d129e44255f9e79ff678931ccd4629a63b149e5f"
+  },
+  "nodeGroups": [],
+  "id": "SFebMvMKwGPt0RFl",
+  "tags": []
+}
