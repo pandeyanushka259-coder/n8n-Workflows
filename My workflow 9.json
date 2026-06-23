@@ -1,0 +1,277 @@
+{
+  "name": "My workflow 9",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nMy name is Nikki. How can I assist you today?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -32,
+        16
+      ],
+      "id": "49e7f6c3-2639-4645-bb9d-a5219c00fd89",
+      "name": "When chat message received",
+      "webhookId": "0e92787b-904a-452f-b64a-5bd727b23b5c"
+    },
+    {
+      "parameters": {
+        "jsCode": "const minutes = $input.first().json?.body?.instagram_minutes;\nreturn [{\n  instagram_minutes: Number(minutes || 0)\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        16
+      ],
+      "id": "33816fd6-4600-4313-a530-181cb1fb9ca2",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "content": "Monitoring Agent",
+        "height": 368,
+        "width": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        384,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "98925140-283f-4133-841a-26039d002453",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Aap ek Device Usage Monitor Agent hain. Aapka kaam incoming webhook se JSON data check karna hai.\nIncoming Data: {{ $json.instagram_minutes }}\nRules:\n1. Check kijiye ki 'instagram_minutes' ki value 60 se zyada hai ya nahi.\n2. Agar value 60 se zyada hai, toh strictly ye JSON output dijiye:\n   {\"status\": \"CRITICAL_OVERUSE\", \"app\": \"Instagram\", \"minutes_over\": [calculated_value]}\n3. Agar limit ke andar hai, toh ye JSON dijiye:\n   {\"status\": \"HEALTHY\", \"app\": \"None\", \"minutes_over\": 0}\n4. Output me koi extra text, markdown (```json), ya explanations MAT likhna, sirf raw JSON output dena.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        400,
+        64
+      ],
+      "id": "c4631647-a214-4a85-a9f6-4f8ec215e2f9",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        224
+      ],
+      "id": "6c33ec24-0d86-4f51-ab66-3f93ca4cb69a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GDbkBQfRRl4s6EVj",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Alert Agent",
+        "height": 368,
+        "width": 256,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        704,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "a222bae8-affe-442d-b456-a2d4eaf4fc3c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Analyze the status from the previous node. If the status is \"CRITICAL_OVERUSE\", generate a direct, stern, eye-opening psychological voice warning telling the user to stop scrolling Instagram immediately. If \"HEALTHY\", generate a short motivational encouragement. \nStrict Rule: No text symbols or markdown formatting like stars (**), hash signs (#), or bullet points. Keep it audio-friendly plain text.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        720,
+        64
+      ],
+      "id": "b714270f-6eaa-40fc-80cc-c7be825612e4",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        224
+      ],
+      "id": "b2e1aa23-ce2f-424f-94c3-50a4029805f8",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GDbkBQfRRl4s6EVj",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Suggestion Agent",
+        "height": 368,
+        "width": 256,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1040,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "7e38f1c5-e368-4f6a-9606-b6e8dd6af86d",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Review the alert statement from the previous agent. If the user is being warned for critical overuse, create 3 quick, short, phone-free physical habits or activities they should take right now (e.g., drink water, 2-minute stretch, look out the window). \nStrict Rule: Do not use bullet points or number characters. Format it strictly as conversational plain text sentences.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1056,
+        64
+      ],
+      "id": "c9d719bb-bbe2-4f28-8166-c4742ab603bf",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1056,
+        240
+      ],
+      "id": "2ce285c3-a9e3-4297-aa93-668e61e86da9",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GDbkBQfRRl4s6EVj",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "185427ff-3529-4e08-ba4b-e5819429533d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "809a5175cbe1c148973e7947d129e44255f9e79ff678931ccd4629a63b149e5f"
+  },
+  "nodeGroups": [],
+  "id": "a0dBIXv46b1Hd0bi",
+  "tags": []
+}
