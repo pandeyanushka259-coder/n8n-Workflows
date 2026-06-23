@@ -1,0 +1,308 @@
+{
+  "name": "My workflow 6",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nMy name is Anushka. How can I assist you today?",
+        "availableInChat": true,
+        "agentName": "Nikki",
+        "agentDescription": "Work Manager",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        48
+      ],
+      "id": "133f0667-7ecd-4caf-95bd-89f109718f0e",
+      "name": "When chat message received",
+      "webhookId": "2112097d-8344-4225-a12a-50dbf1ea52e3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=1. task_name (Text - e.g., 'Parallel Programming Assignment')\n2. due_d{{ $json.chatInput }}ate (Date Format - YYYY-MM-DD - e.g., '2026-06-20')\n3. estimated_hours (Number - e.g., 6)\n4. status (Text - Hamesha default 'Pending' fill hoga naye entry par)\n### INTENT LOGIC & TWO-WAY PROCESSING:\nCRITERIA 1: DATA ENTRY MODE (Writing Data to Excel)\n- Agar user chat me naya assignment feed kare (e.g., \"Add Compiler Design due on 20 June, 4 hours\"), toh aapko user ke text se \"Task Name\", \n\"Due Date\" aur \"Estimated Hours\" extract karne hain.\n- Date ko hamesha 'YYYY-MM-DD' format me convert karke hi sheet me bhejiye (Jaise 20 June ko '2026-06-20' likhiye).\n- Google Sheets Tool ke 'Append' operation ka use karke ek nayi row insert kijiye jahan:\n * task_name = [Extracted Name]\n * due_date = [Formatted Date]\n * estimated_hours = [Extracted Hours]\n * status = 'Pending'\n- Insertion successfully complete hone ke baad WhatsApp/Chat par confirm kijiye: \" Data Entered! [Task Name] aapki excel sheet me save ho \ngaya hai.\"\nCRITERIA 2: DATA QUERY MODE & DYNAMIC CATEGORISATION (Reading Data)\n- Jab bhi user pending tasks ki list maange ya schedule pooche, toh Google Sheets Tool se data read kijiye.\n- Sirf un rows ko filter kijiye jahan 'status' ki value 'Pending' ho.\n- ALGORITHM FOR CATEGORISATION (Compare due_date with June 16, 2026):\n * Days Remaining = (due_date) - (June 16, 2026)\n * HIGH Priority / Critical Tag: Agar bache hue din 2 ya 2 se kam hon (Days Remaining <= 2). {{ $json.action }}\nYou are a highly intelligent Expense Parsing Assistant. Your sole objective is to analyze raw unstructured user text messages and \nstrictly extract three core data fields: Amount, Description, and Category.\n### 🏷️ EXPENSE CATEGORIZATION LOGIC:\n1. 'Food & Canteen' -> If the message contains items like burger, tea, samosa, party, maggi, dinner, lunch, or snacks.\n2. 'Travel & Commute' -> If the message contains keywords like auto, bus, petrol, fuel, rapido, uber, cab, or train.\n3. 'Education & Stationary' -> If the message references terms like xerox, printout, assignment, pen, books, library, or photocopies.\n4. 'Others' -> Any expense that does not logically fit into the three strict rules above.\n### 📝 STRICT FORMATTING RULES:\nYou must output the final result in raw clean text matching the exact pattern below. Do NOT wrap the response in markdown blocks \n(such as json or text):\nAmount: [Extract only the pure numerical value here]\nDescription: [Write a brief, clear translated action description here]\nCategory: [Insert exactly one of the 4 strict categories listed above\nFor workflow 6 choose 1\nFor expense tracker choose 2",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        48
+      ],
+      "id": "0baa734a-5aad-48a1-9c82-51d9f8d51c94",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-flash-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        256
+      ],
+      "id": "febd00c4-ad19-410d-8538-644342385306",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GDbkBQfRRl4s6EVj",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        256
+      ],
+      "id": "895cce66-8692-4da7-82d9-e9ffc3b5c9a6",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1PSgl73-f3uTvP2HKfNbBNdKDmVvxh1blGen1ygL2uyw",
+          "mode": "list",
+          "cachedResultName": "Workflow 6",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PSgl73-f3uTvP2HKfNbBNdKDmVvxh1blGen1ygL2uyw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PSgl73-f3uTvP2HKfNbBNdKDmVvxh1blGen1ygL2uyw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Date', `Due date in YYYY-MM-DD format `, 'string') }}",
+            "Work": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Work__using_to_match_', `Name of the asssignment or task`, 'string') }}",
+            "Deadline": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Deadline', `Estimated hours to complete the task(number)`, 'string') }}"
+          },
+          "matchingColumns": [
+            "Work"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Work",
+              "displayName": "Work",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Deadline",
+              "displayName": "Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        240
+      ],
+      "id": "770727a1-6917-4206-a74e-6bdd53e03d6e",
+      "name": "Append or update row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "u5eltDn7ZAA1KjPz",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "17h1BirHyMqEYOE518DLTrQGViY0CRxBzHi2dDb3A_uQ",
+          "mode": "list",
+          "cachedResultName": "Expense Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17h1BirHyMqEYOE518DLTrQGViY0CRxBzHi2dDb3A_uQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17h1BirHyMqEYOE518DLTrQGViY0CRxBzHi2dDb3A_uQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Date_', `Tell me the date`, 'string') }}",
+            "Amount": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Amount', `Tell me the amount`, 'string') }}",
+            "Description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', `Give its description`, 'string') }}",
+            "Category": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Category', `Tell me the category`, 'string') }}"
+          },
+          "matchingColumns": [
+            "Date "
+          ],
+          "schema": [
+            {
+              "id": "Date ",
+              "displayName": "Date ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        608,
+        160
+      ],
+      "id": "8c0a7d70-d35f-4201-ac4a-43be75dfd9d5",
+      "name": "Append or update row in sheet in Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "u5eltDn7ZAA1KjPz",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet in Google Sheets1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "1f7cf475-3464-40c9-9228-70560e1cf5e5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "809a5175cbe1c148973e7947d129e44255f9e79ff678931ccd4629a63b149e5f"
+  },
+  "nodeGroups": [],
+  "id": "r9w44CVfFU8pW7IV",
+  "tags": []
+}
