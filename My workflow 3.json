@@ -1,0 +1,257 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Chitti Mood Engine",
+        "formDescription": "Enter your name and select your mood.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Hi dear,How is your mood today?",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Energetic"
+                  },
+                  {
+                    "option": "Stressed"
+                  },
+                  {
+                    "option": "Lazy"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0763ad81-9d94-4442-aedb-8e7562e81c61",
+      "name": "On form submission",
+      "webhookId": "4a27df28-c77e-440d-88fb-47a1b3fb4d03"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Hi dear,How is your mood today?'] }}",
+                    "rightValue": "Energetic",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "6475f8de-7b44-42c9-95ff-fd509254bf9c"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "93903d7d-d90e-443c-9be8-84d5f8a1f97c",
+                    "leftValue": "={{ $json['Hi dear,How is your mood today?'] }}",
+                    "rightValue": "Stressed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "0de3b543-736d-48e1-814a-d3266455f801",
+                    "leftValue": "={{ $json['Hi dear,How is your mood today?'] }}",
+                    "rightValue": "Lazy",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "360e81d8-a4dc-46b6-a897-308669fb8a74",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json['Hi dear,How is your mood today?'] }}Suggest a song according to my mood with some motivational quotes",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        416,
+        -112
+      ],
+      "id": "53438919-dbf7-4308-bf58-a6c9d46d4a8a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        528,
+        144
+      ],
+      "id": "a099d369-b189-4fc6-ab8e-6faa43b9885e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GDbkBQfRRl4s6EVj",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "+14155238886",
+        "to": "+918601783449",
+        "toWhatsapp": true,
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        768,
+        -112
+      ],
+      "id": "a2b3ffd6-2501-448c-a771-c6f3a0e0fc9c",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "credentials": {
+        "twilioApi": {
+          "id": "m98CP1ZV01MEoelP",
+          "name": "Twilio account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7f609681-6d03-4406-b9c8-b69f4506e449",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "809a5175cbe1c148973e7947d129e44255f9e79ff678931ccd4629a63b149e5f"
+  },
+  "nodeGroups": [],
+  "id": "XBL8OkaK0pvw1pKc",
+  "tags": []
+}
